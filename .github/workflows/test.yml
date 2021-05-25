@@ -1,0 +1,161 @@
+name: Python Tests
+env:
+  AWS_HOST: localstack
+  SERVICES: iam,s3,lambda,apigateway,cloudwatch,events,cloudformation,sts,cognito,secretsmanager,dynamodb,ecr, sqs
+  NODE_ENV: test
+on: push
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: cbrix-company/.cbrix
+      with:
+        callback_url: ${{ github.event.inputs.callback_url }}
+        sha: ${{ github.event.inputs.sha }}
+        centralized_repo_run_id: ${{ github.run_id }}
+        name: ${{ github.workflow }}
+        tenant_id: ${{ github.event.inputs.tenant_id }}
+        owner: ${{ github.event.inputs.owner }}
+        original_repo: ${{ github.event.inputs.original_repo_name }}
+
+  unit-test:
+    needs: register
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.inputs.original_repo_full_name }}
+        ref: ${{ github.event.inputs.sha }}
+        token: ${{ github.event.inputs.token }}
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+    - name: Test with pytest
+      run: |
+        pytest --envfile .env/.pytest --setup-show --log-cli-level INFO tests/unit/
+
+  mock-unit-test:
+    needs: register
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.inputs.original_repo_full_name }}
+        ref: ${{ github.event.inputs.sha }}
+        token: ${{ github.event.inputs.token }}
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r service_mocks/requirements-mock.txt
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+    - name: Install private packages
+      run: |
+        python ./packaging_tools/private_packages.py ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+    - name: unit test for mock service
+      env:
+        IS_USING_MOCK: true
+      run: |
+        pytest --envfile .env/.pytest --setup-show --log-cli-level INFO tests/api/
+
+  integration-test:
+    needs: register
+    runs-on: ubuntu-latest
+    services:
+      localstack:
+        image: localstack/localstack
+        ports:
+          - 4566:4566 # Localstack exposes all services on same port
+        env:
+          SERVICES: ${{ env.SERVICES }}
+          DEBUG: ""
+          DATA_DIR: ""
+          LAMBDA_EXECUTOR: ""
+          KINESIS_ERROR_PROBABILITY: ""
+          DOCKER_HOST: unix:///var/run/docker.sock
+          HOST_TMP_FOLDER: "/tmp"
+          HOSTNAME_EXTERNAL: ${{ env.AWS_HOST }} # Required so that resource urls are provided properly
+          # e.g sqs url will get localhost if we don't set this env to map our service
+        options: >-
+          --name=localstack
+          --health-cmd="curl -sS 127.0.0.1:4566 || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.inputs.original_repo_full_name }}
+        ref: ${{ github.event.inputs.sha }}
+        token: ${{ github.event.inputs.token }}
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install Serverless framework
+      run: |
+        sudo npm install -g serverless@2.29.0
+    - name: Install dependencies
+      run: |
+        npm install
+        python -m pip install --upgrade pip
+        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
+    - name: Install private packages
+      run: |
+        python ./packaging_tools/private_packages.py ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+    - name: Install private packages
+      run: |
+        echo "GITHUB_TOKEN=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" >> $GITHUB_ENV
+        python ./packaging_tools/private_packages.py
+    - name: Localstack health
+      run: |
+        curl http://localhost:4566/health
+    - name: Deploy to local stack
+      run: |
+        sudo serverless deploy --stage test
+    - name: Test Integration
+      run: |
+        pytest --envfile .env/.sls tests/integration
+    - name: Print localstack's logs
+      if: always()
+      run: |
+        docker logs `docker ps |grep localstack | awk '{print $1}'`
+
+  push-to-registry:
+    needs: ["mock-unit-test"]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.inputs.original_repo_full_name }}
+        ref: ${{ github.event.inputs.sha }}
+        token: ${{ github.event.inputs.token }}
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Build images
+      run: |
+        docker build -f ./service_mocks/dockerfile-test -t ghcr.io/cbrix-company/{{service_name}}:latest .
+    - name: Login to registry
+      run: |
+        docker login ghcr.io --username ${{ secrets.DOCKER_REGISTRY_USER }} --password ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+    - name: Upload image
+      run: |
+        docker push ghcr.io/cbrix-company/{{service_name}}:latest

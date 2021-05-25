@@ -1,0 +1,45 @@
+name: Linter
+
+on: push
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: cbrix-company/.cbrix
+      with:
+        callback_url: ${{ github.event.inputs.callback_url }}
+        sha: ${{ github.event.inputs.sha }}
+        centralized_repo_run_id: ${{ github.run_id }}
+        name: ${{ github.workflow }}
+        tenant_id: ${{ github.event.inputs.tenant_id }}
+        owner: ${{ github.event.inputs.owner }}
+        original_repo: ${{ github.event.inputs.original_repo_name }}
+  linter:
+    needs: register
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.inputs.original_repo_full_name }}
+        ref: ${{ github.event.inputs.sha }}
+        token: ${{ github.event.inputs.token }}
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+    - name: Analysing the code with flake8
+      run: |
+        flake8 . | tee flake8.txt
+        flake8 . 
+
+    - name: Upload flake8.txt as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: flake8 report
+        path: flake8.txt

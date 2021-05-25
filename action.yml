@@ -1,0 +1,41 @@
+name: 'Register workflow check'
+description: 'Action to register workflow check with workflow-service'
+branding:
+  icon: 'check-circle'
+  color: 'white'
+inputs:
+  callback_url: 
+    description: 'Endpoint url for register check'
+    required: true
+  sha: 
+    description: 'Sha of original commit'
+    required: true
+  centralized_repo_run_id: 
+    description: 'ID of centralized workflow run'
+    required: true
+  name: 
+    description: 'Name of check'
+    required: true
+  tenant_id: 
+    description: 'Tenant id that owns the original repo'
+    required: true
+  owner: 
+    description: 'Github owner of the original repo'
+    required: true
+  original_repo: 
+    description: 'Original repo name'
+    required: true
+runs:
+  using: "composite"
+  steps: 
+    - run: |
+        curl --request POST '${{ inputs.callback_url }}' \
+          --header 'Content-Type: application/json' \
+          --data-raw '{
+              "owner": "${{ inputs.owner }}",
+              "original_repo": "${{ inputs.original_repo }}",
+              "centralized_repo_run_id": "${{ inputs.centralized_repo_run_id }}",
+              "name": "${{ inputs.name }}",
+              "sha": "${{ inputs.sha }}"
+          }'
+      shell: bash
