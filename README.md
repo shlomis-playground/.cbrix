@@ -2,7 +2,7 @@
 ## Intro
 This repo contains the centralised workflow to be activated on all repositories by the _workflow-service_.
 
-This workflow is triggered by the _push_ flow on the _workflow-service_ and expects the following context under `github.event.inputs`:
+The workflows are triggered by repository_dispatch event by the _push_ flow on the _workflow-service_ and expects the following context under `github.event.client_payload`:
 ```javascript
 {
     "sha":          // the original commit sha
