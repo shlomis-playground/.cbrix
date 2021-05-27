@@ -35,6 +35,17 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+    - name: Set id_rsa
+      run: |
+        sudo mkdir /root/.ssh | exit 0
+        sudo printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/id_rsa
+        sudo cp ~/id_rsa /root/.ssh/id_rsa
+        sudo chmod 600 /root/.ssh/id_rsa
+    - name: Set up private ssh key
+      uses: webfactory/ssh-agent@v0.5.2
+      with:
+        ssh-private-key:
+          ${{ secrets.DEPLOY_KEY }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -58,15 +69,23 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
+    - name: Set id_rsa
+      run: |
+        sudo mkdir /root/.ssh | exit 0
+        sudo printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/id_rsa
+        sudo cp ~/id_rsa /root/.ssh/id_rsa
+        sudo chmod 600 /root/.ssh/id_rsa
+    - name: Set up private ssh key
+      uses: webfactory/ssh-agent@v0.5.2
+      with:
+        ssh-private-key:
+          ${{ secrets.DEPLOY_KEY }}
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r service_mocks/requirements-mock.txt
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-    - name: Install private packages
-      run: |
-        python ./packaging_tools/private_packages.py ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
     - name: unit test for mock service
       env:
         IS_USING_MOCK: true
@@ -97,6 +116,10 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+      service-discovery:
+        image: ghcr.io/cbrix-company/service-discovery:latest
+        ports:
+          - 9999:80
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -104,6 +127,17 @@ jobs:
         repository: ${{ github.event.client_payload.original_repo_full_name }}
         ref: ${{ github.event.client_payload.sha }}
         token: ${{ github.event.client_payload.token }}
+    - name: Set id_rsa
+      run: |
+        sudo mkdir /root/.ssh | exit 0
+        sudo printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/id_rsa
+        sudo cp ~/id_rsa /root/.ssh/id_rsa
+        sudo chmod 600 /root/.ssh/id_rsa
+    - name: Set up private ssh key
+      uses: webfactory/ssh-agent@v0.5.2
+      with:
+        ssh-private-key:
+          ${{ secrets.DEPLOY_KEY }}
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
@@ -116,13 +150,6 @@ jobs:
         npm install
         python -m pip install --upgrade pip
         if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-    - name: Install private packages
-      run: |
-        python ./packaging_tools/private_packages.py ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-    - name: Install private packages
-      run: |
-        echo "GITHUB_TOKEN=${{ secrets.DOCKER_REGISTRY_PASSWORD }}" >> $GITHUB_ENV
-        python ./packaging_tools/private_packages.py
     - name: Localstack health
       run: |
         curl http://localhost:4566/health
@@ -137,27 +164,3 @@ jobs:
       run: |
         docker logs `docker ps |grep localstack | awk '{print $1}'`
 
-  push-to-registry:
-    needs: ["mock-unit-test"]
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ github.event.client_payload.original_repo_full_name }}
-        ref: ${{ github.event.client_payload.sha }}
-        token: ${{ github.event.client_payload.token }}
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Build images
-      run: |
-        docker build -f ./service_mocks/dockerfile-test -t ghcr.io/cbrix-company/{{service_name}}:latest .
-    - name: Login to registry
-      run: |
-        docker login ghcr.io --username ${{ secrets.DOCKER_REGISTRY_USER }} --password ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-    - name: Upload image
-      run: |
-        docker push ghcr.io/cbrix-company/{{service_name}}:latest
