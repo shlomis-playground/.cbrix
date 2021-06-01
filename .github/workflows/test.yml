@@ -18,6 +18,7 @@ jobs:
         tenant_id: ${{ github.event.inputs.tenant_id }}
         owner: ${{ github.event.inputs.owner }}
         original_repo: ${{ github.event.inputs.original_repo_name }}
+        verification_token: ${{ github.event.inputs.verification_token }}
 
   unit-test:
     needs: register

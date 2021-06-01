@@ -25,12 +25,16 @@ inputs:
   original_repo: 
     description: 'Original repo name'
     required: true
+  verification_token: 
+    description: 'Used to verify the request against the workflow'
+    required: true
 runs:
   using: "composite"
   steps: 
     - run: |
         curl --request POST '${{ inputs.callback_url }}' \
           --header 'Content-Type: application/json' \
+          --header 'Authorization: Bearer ${{inputs.verification_token}}' \
           --data-raw '{
               "owner": "${{ inputs.owner }}",
               "original_repo": "${{ inputs.original_repo }}",
