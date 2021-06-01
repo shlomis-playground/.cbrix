@@ -37,6 +37,7 @@ runs:
           --header 'Authorization: Bearer ${{inputs.verification_token}}' \
           --data-raw '{
               "owner": "${{ inputs.owner }}",
+              "tenant_id": "${{ inputs.tenant_id }}",
               "original_repo": "${{ inputs.original_repo }}",
               "centralized_repo_run_id": "${{ inputs.centralized_repo_run_id }}",
               "name": "${{ inputs.name }}",

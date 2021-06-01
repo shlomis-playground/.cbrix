@@ -1,21 +1,23 @@
 name: Linter
 
-on: push
+on:
+  repository_dispatch:
+    types: [org-workflow-bot]
 
 jobs:
   register:
     runs-on: ubuntu-latest
     steps:
-    - uses: cbrix-company/.cbrix
+    - uses: cbrix-company/.cbrix@main
       with:
-        callback_url: ${{ github.event.inputs.callback_url }}
-        sha: ${{ github.event.inputs.sha }}
+        callback_url: ${{ github.event.client_payload.callback_url }}
+        sha: ${{ github.event.client_payload.sha }}
         centralized_repo_run_id: ${{ github.run_id }}
         name: ${{ github.workflow }}
-        tenant_id: ${{ github.event.inputs.tenant_id }}
-        owner: ${{ github.event.inputs.owner }}
-        original_repo: ${{ github.event.inputs.original_repo_name }}
-        verification_token: ${{ github.event.inputs.verification_token }}
+        tenant_id: ${{ github.event.client_payload.tenant_id }}
+        owner: ${{ github.event.client_payload.owner }}
+        original_repo: ${{ github.event.client_payload.original_repo_name }}
+        verification_token: ${{ github.event.client_payload.verification_token }}
 
   linter:
     needs: register
@@ -24,9 +26,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        repository: ${{ github.event.inputs.original_repo_full_name }}
-        ref: ${{ github.event.inputs.sha }}
-        token: ${{ github.event.inputs.token }}
+        repository: ${{ github.event.client_payload.original_repo_full_name }}
+        ref: ${{ github.event.client_payload.sha }}
+        token: ${{ github.event.client_payload.token }}
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
