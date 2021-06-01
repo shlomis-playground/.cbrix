@@ -32,29 +32,9 @@ jobs:
         repository: ${{ github.event.client_payload.original_repo_full_name }}
         ref: ${{ github.event.client_payload.sha }}
         token: ${{ github.event.client_payload.token }}
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Set id_rsa
+    - name: Unit test
       run: |
-        sudo mkdir /root/.ssh | exit 0
-        sudo printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/id_rsa
-        sudo cp ~/id_rsa /root/.ssh/id_rsa
-        sudo chmod 600 /root/.ssh/id_rsa
-    - name: Set up private ssh key
-      uses: webfactory/ssh-agent@v0.5.2
-      with:
-        ssh-private-key:
-          ${{ secrets.DEPLOY_KEY }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-    - name: Test with pytest
-      run: |
-        pytest --envfile .env/.pytest --setup-show --log-cli-level INFO tests/unit/
+        echo "This is the unit test place holder"
 
   mock-unit-test:
     needs: register
@@ -66,61 +46,13 @@ jobs:
         repository: ${{ github.event.client_payload.original_repo_full_name }}
         ref: ${{ github.event.client_payload.sha }}
         token: ${{ github.event.client_payload.token }}
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Set id_rsa
+    - name: Unit test for mock service
       run: |
-        sudo mkdir /root/.ssh | exit 0
-        sudo printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/id_rsa
-        sudo cp ~/id_rsa /root/.ssh/id_rsa
-        sudo chmod 600 /root/.ssh/id_rsa
-    - name: Set up private ssh key
-      uses: webfactory/ssh-agent@v0.5.2
-      with:
-        ssh-private-key:
-          ${{ secrets.DEPLOY_KEY }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r service_mocks/requirements-mock.txt
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-    - name: unit test for mock service
-      env:
-        IS_USING_MOCK: true
-      run: |
-        pytest --envfile .env/.pytest --setup-show --log-cli-level INFO tests/api/
+        echo "This is the unit test for mock service place holder"
 
   integration-test:
     needs: register
     runs-on: ubuntu-latest
-    services:
-      localstack:
-        image: localstack/localstack
-        ports:
-          - 4566:4566 # Localstack exposes all services on same port
-        env:
-          SERVICES: ${{ env.SERVICES }}
-          DEBUG: ""
-          DATA_DIR: ""
-          LAMBDA_EXECUTOR: ""
-          KINESIS_ERROR_PROBABILITY: ""
-          DOCKER_HOST: unix:///var/run/docker.sock
-          HOST_TMP_FOLDER: "/tmp"
-          HOSTNAME_EXTERNAL: ${{ env.AWS_HOST }} # Required so that resource urls are provided properly
-          # e.g sqs url will get localhost if we don't set this env to map our service
-        options: >-
-          --name=localstack
-          --health-cmd="curl -sS 127.0.0.1:4566 || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-      service-discovery:
-        image: ghcr.io/cbrix-company/service-discovery:latest
-        ports:
-          - 9999:80
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -128,40 +60,6 @@ jobs:
         repository: ${{ github.event.client_payload.original_repo_full_name }}
         ref: ${{ github.event.client_payload.sha }}
         token: ${{ github.event.client_payload.token }}
-    - name: Set id_rsa
+    - name: Integration Test
       run: |
-        sudo mkdir /root/.ssh | exit 0
-        sudo printf '%s\n' "${{ secrets.DEPLOY_KEY }}" > ~/id_rsa
-        sudo cp ~/id_rsa /root/.ssh/id_rsa
-        sudo chmod 600 /root/.ssh/id_rsa
-    - name: Set up private ssh key
-      uses: webfactory/ssh-agent@v0.5.2
-      with:
-        ssh-private-key:
-          ${{ secrets.DEPLOY_KEY }}
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install Serverless framework
-      run: |
-        sudo npm install -g serverless@2.29.0
-    - name: Install dependencies
-      run: |
-        npm install
-        python -m pip install --upgrade pip
-        if [ -f requirements-test.txt ]; then pip install -r requirements-test.txt; fi
-    - name: Localstack health
-      run: |
-        curl http://localhost:4566/health
-    - name: Deploy to local stack
-      run: |
-        sudo serverless deploy --stage test
-    - name: Test Integration
-      run: |
-        pytest --envfile .env/.sls tests/integration
-    - name: Print localstack's logs
-      if: always()
-      run: |
-        docker logs `docker ps |grep localstack | awk '{print $1}'`
-
+        echo "This is the integration test place holder"
