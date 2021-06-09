@@ -45,7 +45,7 @@ jobs:
       with:
         repository: ${{ github.event.client_payload.original_repo_full_name }}
         ref: ${{ github.event.client_payload.sha }}
-        token: ${{ github.event.client_payload.token }}
+        token: ${{ github.event.client_payload.github_token }}
     - name: Unit test for mock service
       run: |
         echo "This is the unit test for mock service place holder"
@@ -59,7 +59,7 @@ jobs:
       with:
         repository: ${{ github.event.client_payload.original_repo_full_name }}
         ref: ${{ github.event.client_payload.sha }}
-        token: ${{ github.event.client_payload.token }}
+        token: ${{ github.event.client_payload.github_token }}
     - name: Integration Test
       run: |
         echo "This is the integration test place holder"
