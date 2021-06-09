@@ -10,7 +10,7 @@ The workflows are triggered by repository_dispatch event by the _push_ flow on t
     "owner":              // github owner of the original repo
     "original_repo_name": 
     "original_repo_full_name":  // "owner/original_repo_name"
-    "token":              // tenant's oauth token to checkout the repo
+    "github_token":       // tenant's oauth token to checkout the repo
     "callback_url":       // the register check endpoint
     "callback_token":     // used to verify the register callback request against the workflow id 
 },
