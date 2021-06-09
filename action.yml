@@ -25,7 +25,7 @@ inputs:
   original_repo: 
     description: 'Original repo name'
     required: true
-  verification_token: 
+  callback_token: 
     description: 'Used to verify the request against the workflow'
     required: true
 runs:
@@ -34,7 +34,7 @@ runs:
     - run: |
         curl --request POST '${{ inputs.callback_url }}' \
           --header 'Content-Type: application/json' \
-          --header 'Authorization: Bearer ${{inputs.verification_token}}' \
+          --header 'Authorization: Bearer ${{inputs.callback_token}}' \
           --data-raw '{
               "owner": "${{ inputs.owner }}",
               "tenant_id": "${{ inputs.tenant_id }}",

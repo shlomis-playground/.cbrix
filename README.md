@@ -12,14 +12,14 @@ The workflows are triggered by repository_dispatch event by the _push_ flow on t
     "original_repo_full_name":  // "owner/original_repo_name"
     "token":              // tenant's oauth token to checkout the repo
     "callback_url":       // the register check endpoint
-    "verification_token": // used to verify the request against the workflow id 
+    "callback_token":     // used to verify the register callback request against the workflow id 
 },
 
 ```
 
 When the workflow is triggered, it calls the _register_ endpoint of the _workflow-service_ to relate the checks in the centrilised workflow with those on the original repository.
 
-The register call is authenticated, the token is passed in the context as `verification_token` and should be populated in the `Authorization` header.
+The register call is authenticated, the token is passed in the context as `callback_token` and should be populated in the `Authorization` header.
 
 The checks on this workflow are performed on the original repo using a _Checkout_ step in a job.
 

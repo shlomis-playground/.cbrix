@@ -17,7 +17,7 @@ jobs:
         tenant_id: ${{ github.event.client_payload.tenant_id }}
         owner: ${{ github.event.client_payload.owner }}
         original_repo: ${{ github.event.client_payload.original_repo_name }}
-        verification_token: ${{ github.event.client_payload.verification_token }}
+        callback_token: ${{ github.event.client_payload.callback_token }}
 
   linter:
     needs: register
