@@ -17,6 +17,8 @@ jobs:
         tenant_id: ${{ github.event.client_payload.tenant_id }}
         owner: ${{ github.event.client_payload.owner }}
         original_repo: ${{ github.event.client_payload.original_repo_name }}
+        callback_token: ${{ github.event.client_payload.callback_token }}
+
   linter:
     needs: register
     runs-on: ubuntu-latest
@@ -26,7 +28,7 @@ jobs:
       with:
         repository: ${{ github.event.client_payload.original_repo_full_name }}
         ref: ${{ github.event.client_payload.sha }}
-        token: ${{ github.event.client_payload.token }}
+        token: ${{ github.event.client_payload.github_token }}
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
       with:
