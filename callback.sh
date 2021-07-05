@@ -44,13 +44,13 @@ CALLBACK_TOKEN=$(jq -r '.callback_token' <<< ${CLIENT_PAYLOAD[@]})
 # CBrix ID for the entire workflow suite
 WORKFLOW_SUITE_ID=$(jq -r '.workflow_suite_id' <<< ${CLIENT_PAYLOAD[@]})
 
-echo "VENDOR: $VENDOR"
-echo "APP_ID: $APP_ID"
-echo "INSTALLATION_ID: $INSTALLATION_ID"
-echo "WORKFLOW_NAME: $WORKFLOW_NAME"
+echo "VENDOR: ${VENDOR}"
+echo "APP_ID: ${APP_ID}"
+echo "INSTALLATION_ID: ${INSTALLATION_ID}"
+echo "WORKFLOW_NAME: ${WORKFLOW_NAME}"
 echo "TENANT_ID: ${TENANT_ID}"
 echo "WORKFLOW_ID: $WORKFLOW_ID"
-echo "JOB_ID: $JOB_ID"
+echo "JOB_ID: ${JOB_ID}"
 echo "CALLBACK_URL: ${CALLBACK_URL}"
 echo "COMMIT_SHA: ${COMMIT_SHA}"
 echo "OWNER: ${OWNER}"
