@@ -1,46 +1,20 @@
-name: 'Register workflow check'
-description: 'Action to register workflow check with workflow-service'
+name: "Register workflow check"
+description: "Action to register workflow check with workflow-service"
 branding:
-  icon: 'check-circle'
-  color: 'white'
+    icon: "check-circle"
+    color: "white"
 inputs:
-  callback_url: 
-    description: 'Endpoint url for register check'
-    required: true
-  sha: 
-    description: 'Sha of original commit'
-    required: true
-  centralized_repo_run_id: 
-    description: 'ID of centralized workflow run'
-    required: true
-  name: 
-    description: 'Name of check'
-    required: true
-  tenant_id: 
-    description: 'Tenant id that owns the original repo'
-    required: true
-  owner: 
-    description: 'Github owner of the original repo'
-    required: true
-  original_repo: 
-    description: 'Original repo name'
-    required: true
-  callback_token: 
-    description: 'Used to verify the request against the workflow'
-    required: true
+    callback_action:
+        description: "Callback action, can be: [register, completed]"
+        required: true
+    job_status:
+        description: "The current status of the job. Possible values are success, failure, or cancelled."
+        required: false
 runs:
-  using: "composite"
-  steps: 
-    - run: |
-        curl --request POST '${{ inputs.callback_url }}' \
-          --header 'Content-Type: application/json' \
-          --header 'Authorization: Bearer ${{inputs.callback_token}}' \
-          --data-raw '{
-              "owner": "${{ inputs.owner }}",
-              "tenant_id": "${{ inputs.tenant_id }}",
-              "original_repo": "${{ inputs.original_repo }}",
-              "centralized_repo_run_id": "${{ inputs.centralized_repo_run_id }}",
-              "name": "${{ inputs.name }}",
-              "sha": "${{ inputs.sha }}"
-          }'
-      shell: bash
+    using: "composite"
+    steps:
+        - run: ${{ github.action_path }}/callback.sh '${{ toJson(github) }}'
+          shell: bash
+          env:
+              CALLBACK_ACTION: ${{ inputs.callback_action}}
+              JOB_STATUS: ${{ inputs.job_status}}

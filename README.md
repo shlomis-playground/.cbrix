@@ -1,23 +1,28 @@
-# .CBRIX Centralised workflow
+# Playground for .CBRIX Centralised workflow
 ## Intro
 This repo contains the centralised workflow to be activated on all repositories by the _workflow-service_.
 
-The workflows are triggered by repository_dispatch event by the _push_ flow on the _workflow-service_ and expects the following context under `github.event.client_payload`:
+This workflow is triggered by the _push_ flow on the _workflow-service_ and expects the following context under `github.event.inputs`:
 ```javascript
 {
-    "sha":                // the original commit sha
+    "app_id":             // Github App ID
+    "installation_id":    // Github App installation ID
+    "commit_sha":         // The original commit sha
     "tenant_id":          // tenant_id of the original repo
-    "owner":              // github owner of the original repo
-    "original_repo_name": 
-    "original_repo_full_name":  // "owner/original_repo_name"
-    "github_token":       // tenant's oauth token to checkout the repo
-    "callback_url":       // the register check endpoint
-    "callback_token":     // used to verify the register callback request against the workflow id 
-},
-
+    "workflow_suite_id":  // CBrix ID for the entire workflow suite
+    "owner":              // Github owner of the original repo
+    "original_repository":               // original_repo_name
+    "github_token":       // Tenant's oauth token to checkout the repo
+    "callback_url":       // The register check endpoint
+    "callback_token":     // Used to verify the request against the workflow id 
+}
 ```
 
-When the workflow is triggered, it calls the _register_ endpoint of the _workflow-service_ to relate the checks in the centrilised workflow with those on the original repository.
+When the workflow is triggered, each job do the following:
+-  Calls the _register_ endpoint of the _workflow-service_ 
+-  Run the action
+-  Calls the _completed_ endpoint of the _workflow-service_ 
+
 
 The register call is authenticated, the token is passed in the context as `callback_token` and should be populated in the `Authorization` header.
 

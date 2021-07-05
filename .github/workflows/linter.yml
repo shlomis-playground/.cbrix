@@ -2,32 +2,21 @@ name: Linter
 
 on:
   repository_dispatch:
-    types: [org-workflow-bot]
+    types: [activate-workflow]
 
 jobs:
-  register:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: cbrix-company/.cbrix@main
-      with:
-        callback_url: ${{ github.event.client_payload.callback_url }}
-        sha: ${{ github.event.client_payload.sha }}
-        centralized_repo_run_id: ${{ github.run_id }}
-        name: ${{ github.workflow }}
-        tenant_id: ${{ github.event.client_payload.tenant_id }}
-        owner: ${{ github.event.client_payload.owner }}
-        original_repo: ${{ github.event.client_payload.original_repo_name }}
-        callback_token: ${{ github.event.client_payload.callback_token }}
-
   linter:
-    needs: register
     runs-on: ubuntu-latest
     steps:
+    - name: Register
+      uses: cbrix-dev-playground/.cbrix@main
+      with:
+        callback_action: register
     - name: Checkout
       uses: actions/checkout@v2
       with:
-        repository: ${{ github.event.client_payload.original_repo_full_name }}
-        ref: ${{ github.event.client_payload.sha }}
+        repository: ${{ github.event.client_payload.owner }}/${{ github.event.client_payload.original_repository }}
+        ref: ${{ github.event.client_payload.commit_sha }}
         token: ${{ github.event.client_payload.github_token }}
     - name: Set up Python 3.8
       uses: actions/setup-python@v2
@@ -41,9 +30,14 @@ jobs:
       run: |
         flake8 . | tee flake8.txt
         flake8 . 
-
     - name: Upload flake8.txt as artifact
       uses: actions/upload-artifact@v2
       with:
         name: flake8 report
         path: flake8.txt
+    - name: Complete
+      if: always()
+      uses: cbrix-dev-playground/.cbrix@main
+      with:
+        callback_action: completed
+        job_status: ${{ job.status }}
