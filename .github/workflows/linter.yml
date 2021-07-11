@@ -1,4 +1,4 @@
-name: Linter
+name: Centralized Linter
 
 on:
   repository_dispatch:
