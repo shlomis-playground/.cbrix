@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Register
-      uses: cbrix-dev-playground/.cbrix@main
+      uses: cbrix-company/.cbrix@main
       with:
         callback_action: register
     - name: Checkout
@@ -37,7 +37,7 @@ jobs:
         path: flake8.txt
     - name: Complete
       if: always()
-      uses: cbrix-dev-playground/.cbrix@main
+      uses: cbrix-company/.cbrix@main
       with:
         callback_action: completed
         job_status: ${{ job.status }}
