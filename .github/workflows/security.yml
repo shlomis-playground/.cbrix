@@ -18,9 +18,23 @@ jobs:
         repository: ${{ github.event.client_payload.owner }}/${{ github.event.client_payload.original_repository }}
         ref: ${{ github.event.client_payload.commit_sha }}
         token: ${{ github.event.client_payload.github_token }}
-    - name: Security check
-      run: |
-        echo "This is the security check place holder"
+        path: "code_to_scan/"
+
+    - name: Check out cbrix-bandit actions
+      uses: actions/checkout@v2
+      with:
+        repository: cbrix-company/bandit-action
+        ref: feature/ch518/cbrix-bandit-slim-action
+        token: ${{ github.event.client_payload.github_token }}
+        path: ./.github/actions/bandit-action
+
+    - name: Run bandit
+      id: bandit
+      uses: ./.github/actions/bandit-action
+      with:
+        target_dir: code_to_scan/
+        token: ${{ github.event.client_payload.github_token }}
+
     - name: Complete
       if: always()
       uses: cbrix-company/.cbrix@main
