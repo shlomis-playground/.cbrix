@@ -25,7 +25,7 @@ jobs:
       with:
         repository: cbrix-company/bandit-action
         ref: main
-        token: ${{ github.event.client_payload.github_token }}
+        token: ${{ secrets.PULL_KEY }}
         path: ./.github/actions/bandit-action
 
     - name: Run bandit
@@ -33,7 +33,7 @@ jobs:
       uses: ./.github/actions/bandit-action
       with:
         target_dir: code/
-        token: ${{ github.event.client_payload.github_token }}
+        token: ${{ secrets.PULL_KEY }}
 
     - name: Complete
       if: always()
