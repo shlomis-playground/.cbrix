@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: cbrix-company/bandit-action
-        ref: feature/ch518/cbrix-bandit-slim-action
+        ref: main
         token: ${{ github.event.client_payload.github_token }}
         path: ./.github/actions/bandit-action
 
