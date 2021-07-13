@@ -5,7 +5,7 @@ on:
     types: [activate-workflow]
 
 jobs:
-  secrets:
+  bandit:
     runs-on: ubuntu-latest
     steps:
     - name: Register
@@ -31,6 +31,43 @@ jobs:
     - name: Run bandit
       id: bandit
       uses: ./.github/actions/bandit-action
+      with:
+        target_dir: code/
+        token: ${{ secrets.PULL_KEY }}
+
+    - name: Complete
+      if: always()
+      uses: cbrix-company/.cbrix@main
+      with:
+        callback_action: completed
+        job_status: ${{ job.status }}
+
+  detect-secrets:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Register
+      uses: cbrix-company/.cbrix@main
+      with:
+        callback_action: register
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.client_payload.owner }}/${{ github.event.client_payload.original_repository }}
+        ref: ${{ github.event.client_payload.commit_sha }}
+        token: ${{ github.event.client_payload.github_token }}
+        path: "code/"
+
+    - name: Check out cbrix-detect-secrets actions
+      uses: actions/checkout@v2
+      with:
+        repository: cbrix-company/detect-secrets-action
+        ref: main
+        token: ${{ secrets.PULL_KEY }}
+        path: ./.github/actions/detect-secrets-action
+
+    - name: Run detect-secrets
+      id: detect-secrets
+      uses: ./.github/actions/detect-secrets-action
       with:
         target_dir: code/
         token: ${{ secrets.PULL_KEY }}
