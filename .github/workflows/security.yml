@@ -13,7 +13,7 @@ jobs:
       with:
         callback_action: register
 
-    - name: Checkout
+    - name: Checkout .cbrix
       uses: actions/checkout@v2
       with:
         repository: cbrix-company/.cbrix
@@ -21,10 +21,10 @@ jobs:
         ref: main
         path: ".cbrix/"
 
-    - name:
+    - name: List .cbrix
       run: ls ./.github/actions/.cbrix
 
-    - name: Checkout
+    - name: Checkout original repository
       uses: actions/checkout@v2
       with:
         repository: ${{ github.event.client_payload.owner }}/${{ github.event.client_payload.original_repository }}
