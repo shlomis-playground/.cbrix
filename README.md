@@ -24,7 +24,7 @@ When the workflow is triggered, each job do the following:
 -  Calls the _completed_ endpoint of the _workflow-service_ 
 
 
-The register call is authenticated, the token is passed in the context as `callback_token` and should be populated in the `Authorization` header.
+The register call is authenticated, the token is passed as part of the context as `callback_token` and should be populated in the `Authorization` header.
 
 The checks on this workflow are performed on the original repo using a _Checkout_ step in a job.
 
