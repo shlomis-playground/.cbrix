@@ -1,7 +1,8 @@
 ---
 skip_tests:
-    - bandit:B105
+    - bandit:B110
 skip_paths:
     - ".git"
+    - "/data/.git"
 filter_by_snippet:
     - d70eab08607a4d05faa2d0d6647206599e9abc65p
