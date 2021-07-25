@@ -4,5 +4,6 @@ skip_tests:
 skip_paths:
     - ".git"
     - "/data/.git"
+    - "/code/tests"
 filter_by_snippet:
     - d70eab08607a4d05faa2d0d6647206599e9abc65p
