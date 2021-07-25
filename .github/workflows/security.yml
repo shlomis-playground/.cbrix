@@ -21,9 +21,6 @@ jobs:
         ref: main
         path: ".cbrix/"
 
-    - name: List .cbrix
-      run: ls ./.github/actions/.cbrix
-
     - name: Checkout original repository
       uses: actions/checkout@v2
       with:
