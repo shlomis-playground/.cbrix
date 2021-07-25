@@ -16,6 +16,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       with:
+        repository: cbrix-company/.cbrix
         token: ${{ github.event.client_payload.github_token }}
         ref: main
         path: ".cbrix/"
