@@ -1,0 +1,7 @@
+---
+skip_tests:
+    - bandit:B105
+skip_paths:
+    - ".git"
+filter_by_snippet:
+    - d70eab08607a4d05faa2d0d6647206599e9abc65p
