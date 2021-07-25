@@ -12,6 +12,12 @@ jobs:
       uses: cbrix-company/.cbrix@main
       with:
         callback_action: register
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        path: ".cbrix/"
+    
     - name: Checkout
       uses: actions/checkout@v2
       with:
