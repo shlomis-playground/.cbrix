@@ -35,11 +35,8 @@ COMMIT_SHA=$(jq -r '.commit_sha' <<< ${CLIENT_PAYLOAD[@]})
 # Tenant id that owns the original repo
 TENANT_ID=$(jq -r '.tenant_id' <<< ${CLIENT_PAYLOAD[@]})
 
-# Github owner of the original repo
-OWNER=$(jq -r '.owner' <<< ${CLIENT_PAYLOAD[@]})
-
-# Original repo name
-ORIGINAL_REPO_NAME=$(jq -r '.original_repository' <<< ${CLIENT_PAYLOAD[@]})
+# Github full repo path (owner/repo_name)
+FULL_REPO_PATH=$(jq -r '.full_repo_path' <<< ${CLIENT_PAYLOAD[@]})
 
 # Original branch name
 BRANCH_NAME=$(jq -r '.branch' <<< ${CLIENT_PAYLOAD[@]})
@@ -60,8 +57,7 @@ echo "WORKFLOW_ID: $WORKFLOW_ID"
 echo "JOB_ID: ${JOB_ID}"
 echo "CALLBACK_URL: ${CALLBACK_URL}"
 echo "COMMIT_SHA: ${COMMIT_SHA}"
-echo "OWNER: ${OWNER}"
-echo "ORIGINAL_REPO_NAME: ${ORIGINAL_REPO_NAME}"
+echo "FULL_REPO_PATH: ${FULL_REPO_PATH}"
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
 
@@ -74,8 +70,7 @@ curl --request POST ${CALLBACK_URL}/${CALLBACK_ACTION} \
     \"app_id\": \"${APP_ID}\",
     \"installation_id\": \"${INSTALLATION_ID}\",
     \"asset_id\": \"${ASSET_ID}\",
-    \"owner\": \"${OWNER}\",
-    \"original_repository\": \"${ORIGINAL_REPO_NAME}\",
+    \"full_repo_path\": \"${FULL_REPO_PATH}\",
     \"branch\": \"${BRANCH_NAME}\",
     \"commit_sha\": \"${COMMIT_SHA}\",
     \"workflow_suite_id\": \"${WORKFLOW_SUITE_ID}\",
