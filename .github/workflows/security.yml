@@ -16,7 +16,7 @@ jobs:
     - name: Checkout .cbrix
       uses: actions/checkout@v2
       with:
-        repository: cbrix-company/.cbrix
+        repository: shlomis-playground/.cbrix
         token: ${{ github.event.client_payload.github_token }}
         ref: main
         path: ".cbrix/"
@@ -32,7 +32,7 @@ jobs:
     - name: Check out cbrix-bandit actions
       uses: actions/checkout@v2
       with:
-        repository: cbrix-company/bandit-action
+        repository: shlomis-playground/bandit-action
         ref: main
         token: ${{ secrets.PULL_KEY }}
         path: ./.github/actions/bandit-action
@@ -46,7 +46,7 @@ jobs:
 
     - name: Complete
       if: always()
-      uses: cbrix-company/.cbrix@main
+      uses: shlomis-playground/.cbrix@main
       with:
         callback_action: completed
         job_status: ${{ job.status }}
@@ -55,14 +55,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Register
-      uses: cbrix-company/.cbrix@main
+      uses: shlomis-playground/.cbrix@main
       with:
         callback_action: register
     
     - name: Checkout .cbrix
       uses: actions/checkout@v2
       with:
-        repository: cbrix-company/.cbrix
+        repository: shlomis-playground/.cbrix
         token: ${{ github.event.client_payload.github_token }}
         ref: main
         path: ".cbrix/"
@@ -78,7 +78,7 @@ jobs:
     - name: Check out cbrix-detect-secrets actions
       uses: actions/checkout@v2
       with:
-        repository: cbrix-company/detect-secrets-action
+        repository: shlomis-playground/detect-secrets-action
         ref: main
         token: ${{ secrets.PULL_KEY }}
         path: ./.github/actions/detect-secrets-action
