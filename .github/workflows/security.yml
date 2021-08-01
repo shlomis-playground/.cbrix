@@ -89,10 +89,15 @@ jobs:
       with:
         target_dir: code/
         token: ${{ secrets.PULL_KEY }}
-
     - name: Complete
       if: always()
       uses: cbrix-company/.cbrix@main
       with:
         callback_action: completed
         job_status: ${{ job.status }}
+    - name: Upload artifact
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: detect-secret
+        path: artifact.json
