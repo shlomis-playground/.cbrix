@@ -24,7 +24,7 @@ jobs:
     - name: Checkout original repository
       uses: actions/checkout@v2
       with:
-        repository: ${{ github.event.client_payload.owner }}/${{ github.event.client_payload.original_repository }}
+        repository: ${{ github.event.client_payload.full_repo_path }}
         ref: ${{ github.event.client_payload.commit_sha }}
         token: ${{ github.event.client_payload.github_token }}
         path: "code/"
