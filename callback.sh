@@ -24,7 +24,7 @@ APP_AND_INSTALLATION_ID=$(jq -r '.app_and_installation_id' <<< ${CLIENT_PAYLOAD[
 ASSET_ID=$(jq -r '.asset_id' <<< ${CLIENT_PAYLOAD[@]})
 
 # Endpoint url for register check
-CALLBACK_URL=$(jq -r '.callback_url' <<< ${CLIENT_PAYLOAD[@]})
+CALLBACK_URL=$(jq -r '.callback_url.workflow' <<< ${CLIENT_PAYLOAD[@]})
 
 # Sha of original commit
 COMMIT_SHA=$(jq -r '.commit_sha' <<< ${CLIENT_PAYLOAD[@]})
