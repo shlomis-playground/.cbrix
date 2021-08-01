@@ -23,6 +23,9 @@ APP_ID=$(jq -r '.app_id' <<< ${CLIENT_PAYLOAD[@]})
 # Github App installation ID
 INSTALLATION_ID=$(jq -r '.installation_id' <<< ${CLIENT_PAYLOAD[@]})
 
+# Github App asset ID
+ASSET_ID=$(jq -r '.asset_id' <<< ${CLIENT_PAYLOAD[@]})
+
 # Endpoint url for register check
 CALLBACK_URL=$(jq -r '.callback_url' <<< ${CLIENT_PAYLOAD[@]})
 
@@ -38,6 +41,9 @@ OWNER=$(jq -r '.owner' <<< ${CLIENT_PAYLOAD[@]})
 # Original repo name
 ORIGINAL_REPO_NAME=$(jq -r '.original_repository' <<< ${CLIENT_PAYLOAD[@]})
 
+# Original branch name
+BRANCH_NAME=$(jq -r '.branch' <<< ${CLIENT_PAYLOAD[@]})
+
 # Used to verify the request against the workflow
 CALLBACK_TOKEN=$(jq -r '.callback_token' <<< ${CLIENT_PAYLOAD[@]})
 
@@ -47,6 +53,7 @@ WORKFLOW_SUITE_ID=$(jq -r '.workflow_suite_id' <<< ${CLIENT_PAYLOAD[@]})
 echo "VENDOR: ${VENDOR}"
 echo "APP_ID: ${APP_ID}"
 echo "INSTALLATION_ID: ${INSTALLATION_ID}"
+echo "ASSET_ID: ${ASSET_ID}"
 echo "WORKFLOW_NAME: ${WORKFLOW_NAME}"
 echo "TENANT_ID: ${TENANT_ID}"
 echo "WORKFLOW_ID: $WORKFLOW_ID"
@@ -55,6 +62,7 @@ echo "CALLBACK_URL: ${CALLBACK_URL}"
 echo "COMMIT_SHA: ${COMMIT_SHA}"
 echo "OWNER: ${OWNER}"
 echo "ORIGINAL_REPO_NAME: ${ORIGINAL_REPO_NAME}"
+echo "BRANCH_NAME: ${BRANCH_NAME}"
 
 
 curl --request POST ${CALLBACK_URL}/${CALLBACK_ACTION} \
@@ -65,8 +73,10 @@ curl --request POST ${CALLBACK_URL}/${CALLBACK_ACTION} \
     \"vendor\": \"$VENDOR\",
     \"app_id\": \"${APP_ID}\",
     \"installation_id\": \"${INSTALLATION_ID}\",
+    \"asset_id\": \"${ASSET_ID}\",
     \"owner\": \"${OWNER}\",
     \"original_repository\": \"${ORIGINAL_REPO_NAME}\",
+    \"branch\": \"${BRANCH_NAME}\",
     \"commit_sha\": \"${COMMIT_SHA}\",
     \"workflow_suite_id\": \"${WORKFLOW_SUITE_ID}\",
     \"workflow_id\": \"${WORKFLOW_ID}\",
