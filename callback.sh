@@ -18,10 +18,7 @@ JOB_ID=$(jq -r '.job' <<< $1)
 CLIENT_PAYLOAD=$(jq -r '.event.client_payload' <<< $1)
 
 # Github App ID
-APP_ID=$(jq -r '.app_id' <<< ${CLIENT_PAYLOAD[@]})
-
-# Github App installation ID
-INSTALLATION_ID=$(jq -r '.installation_id' <<< ${CLIENT_PAYLOAD[@]})
+APP_AND_INSTALLATION_ID=$(jq -r '.app_and_installation_id' <<< ${CLIENT_PAYLOAD[@]})
 
 # Github App asset ID
 ASSET_ID=$(jq -r '.asset_id' <<< ${CLIENT_PAYLOAD[@]})
@@ -48,8 +45,7 @@ CALLBACK_TOKEN=$(jq -r '.callback_token' <<< ${CLIENT_PAYLOAD[@]})
 WORKFLOW_SUITE_ID=$(jq -r '.workflow_suite_id' <<< ${CLIENT_PAYLOAD[@]})
 
 echo "VENDOR: ${VENDOR}"
-echo "APP_ID: ${APP_ID}"
-echo "INSTALLATION_ID: ${INSTALLATION_ID}"
+echo "APP_AND_INSTALLATION_ID: ${APP_AND_INSTALLATION_ID}"
 echo "ASSET_ID: ${ASSET_ID}"
 echo "WORKFLOW_NAME: ${WORKFLOW_NAME}"
 echo "TENANT_ID: ${TENANT_ID}"
@@ -67,8 +63,7 @@ curl --request POST ${CALLBACK_URL}/${CALLBACK_ACTION} \
     --data-raw "{
     \"tenant_id\": \"${TENANT_ID}\",
     \"vendor\": \"$VENDOR\",
-    \"app_id\": \"${APP_ID}\",
-    \"installation_id\": \"${INSTALLATION_ID}\",
+    \"app_and_installation_id\": \"${APP_AND_INSTALLATION_ID}\",
     \"asset_id\": \"${ASSET_ID}\",
     \"full_repo_path\": \"${FULL_REPO_PATH}\",
     \"branch\": \"${BRANCH_NAME}\",
