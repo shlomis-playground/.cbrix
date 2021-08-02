@@ -91,6 +91,7 @@ then
     \"vendor\": \"$VENDOR\",
     \"app_and_installation_id\": \"${APP_AND_INSTALLATION_ID}\",
     \"asset_id\": \"${ASSET_ID}\",
+    \"asset_type\": \"repo\",
     \"full_repo_path\": \"${FULL_REPO_PATH}\",
     \"branch\": \"${BRANCH_NAME}\",
     \"commit_sha\": \"${COMMIT_SHA}\",
