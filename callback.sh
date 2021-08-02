@@ -87,20 +87,11 @@ then
       --header "Content-Type: application/json" \
       --header "Authorization: Bearer ${CALLBACK_TOKEN}" \
       --data-raw "{
-    \"tenant_id\": \"${TENANT_ID}\",
-    \"vendor\": \"$VENDOR\",
-    \"app_and_installation_id\": \"${APP_AND_INSTALLATION_ID}\",
-    \"asset_id\": \"${ASSET_ID}\",
     \"asset_type\": \"repo\",
-    \"full_repo_path\": \"${FULL_REPO_PATH}\",
-    \"branch\": \"${BRANCH_NAME}\",
     \"commit_sha\": \"${COMMIT_SHA}\",
     \"workflow_suite_id\": \"${WORKFLOW_SUITE_ID}\",
     \"workflow_id\": \"${WORKFLOW_ID}\",
-    \"workflow_name\": \"${WORKFLOW_NAME}\",
     \"job_name\": \"${JOB_ID}\",
-    \"status\": \"${CALLBACK_ACTION}\",
-    \"conclusion\": \"${JOB_STATUS}\",
     \"payload\": ${findings}
 
     }"
