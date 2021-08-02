@@ -78,7 +78,7 @@ curl --request POST ${WORFLOW_CALLBACK_URL}/${CALLBACK_ACTION} \
     \"conclusion\": \"${JOB_STATUS}\"
     }"
 
-if [$CALLBACK_ACTION -eq "completed"]
+if [$CALLBACK_ACTION == "completed"]
 then
   echo "***************"
   echo $FINDINGS_CALLBACK_URL
