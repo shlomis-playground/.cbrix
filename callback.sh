@@ -50,7 +50,7 @@ echo "APP_AND_INSTALLATION_ID: ${APP_AND_INSTALLATION_ID}"
 echo "ASSET_ID: ${ASSET_ID}"
 echo "WORKFLOW_NAME: ${WORKFLOW_NAME}"
 echo "TENANT_ID: ${TENANT_ID}"
-echo "WORKFLOW_ID: $WORKFLOW_ID"
+echo "WORKFLOW_ID: ${WORKFLOW_ID}"
 echo "JOB_ID: ${JOB_ID}"
 echo "WORFLOW_CALLBACK_URL: ${WORFLOW_CALLBACK_URL}"
 echo "FINDINGS_CALLBACK_URL: ${FINDINGS_CALLBACK_URL}"
@@ -78,7 +78,7 @@ curl --request POST ${WORFLOW_CALLBACK_URL}/${CALLBACK_ACTION} \
     \"conclusion\": \"${JOB_STATUS}\"
     }"
 
-if [$CALLBACK_ACTION == "completed"]
+if [ $CALLBACK_ACTION == "completed" ]
 then
   echo "***************"
   echo $FINDINGS_CALLBACK_URL
