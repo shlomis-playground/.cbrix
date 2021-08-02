@@ -80,8 +80,10 @@ curl --request POST ${WORFLOW_CALLBACK_URL}/${CALLBACK_ACTION} \
 
 if [ $CALLBACK_ACTION == "completed" ]
 then
-  curl --request POST ${FINDINGS_CALLBACK_URL} \
-    --header "Content-Type: application/json" \
-    --header "Authorization: Bearer ${CALLBACK_TOKEN}" \
-    -d @artifact.json
+  if test -f "artifact.json"; then
+    curl --request POST ${FINDINGS_CALLBACK_URL} \
+      --header "Content-Type: application/json" \
+      --header "Authorization: Bearer ${CALLBACK_TOKEN}" \
+      -d @artifact.json
+  fi
 fi
