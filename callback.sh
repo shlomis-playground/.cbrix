@@ -81,9 +81,27 @@ curl --request POST ${WORFLOW_CALLBACK_URL}/${CALLBACK_ACTION} \
 if [ $CALLBACK_ACTION == "completed" ]
 then
   if test -f "artifact.json"; then
+    findings=`cat artifact.json`
+
     curl --request POST ${FINDINGS_CALLBACK_URL} \
       --header "Content-Type: application/json" \
       --header "Authorization: Bearer ${CALLBACK_TOKEN}" \
-      -d @artifact.json
+      --data-raw "{
+    \"tenant_id\": \"${TENANT_ID}\",
+    \"vendor\": \"$VENDOR\",
+    \"app_and_installation_id\": \"${APP_AND_INSTALLATION_ID}\",
+    \"asset_id\": \"${ASSET_ID}\",
+    \"full_repo_path\": \"${FULL_REPO_PATH}\",
+    \"branch\": \"${BRANCH_NAME}\",
+    \"commit_sha\": \"${COMMIT_SHA}\",
+    \"workflow_suite_id\": \"${WORKFLOW_SUITE_ID}\",
+    \"workflow_id\": \"${WORKFLOW_ID}\",
+    \"workflow_name\": \"${WORKFLOW_NAME}\",
+    \"job_name\": \"${JOB_ID}\",
+    \"status\": \"${CALLBACK_ACTION}\",
+    \"conclusion\": \"${JOB_STATUS}\",
+    \"payload\": \"${findings}\"
+
+    }"
   fi
 fi
