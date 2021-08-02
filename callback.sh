@@ -101,7 +101,7 @@ then
     \"job_name\": \"${JOB_ID}\",
     \"status\": \"${CALLBACK_ACTION}\",
     \"conclusion\": \"${JOB_STATUS}\",
-    \"payload\": \"${findings}\"
+    \"payload\": ${findings}
 
     }"
   fi
