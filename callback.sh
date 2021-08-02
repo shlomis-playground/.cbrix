@@ -1,5 +1,3 @@
-#! /bin/bash
-
 # Callback action, can be: [register, completed]
 echo "CALLBACK_ACTION: ${CALLBACK_ACTION}"
 echo "JOB_STATUS: ${JOB_STATUS}"
@@ -80,9 +78,10 @@ curl --request POST ${WORFLOW_CALLBACK_URL}/${CALLBACK_ACTION} \
     \"conclusion\": \"${JOB_STATUS}\"
     }"
 
-if [ "$CALLBACK_ACTION" == "completed" ]
+if [ $CALLBACK_ACTION == "completed" ]
 then
-  echo "***************"
-  echo $FINDINGS_CALLBACK_URL
-  echo "***************"
+  curl --request POST ${FINDINGS_CALLBACK_URL} \
+    --header "Content-Type: application/json" \
+    --header "Authorization: Bearer ${CALLBACK_TOKEN}" \
+    -d @artifact.json
 fi
