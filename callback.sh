@@ -88,6 +88,7 @@ then
       --header "Authorization: Bearer ${CALLBACK_TOKEN}" \
       --data-raw "{
     \"asset_type\": \"repo\",
+    \"vendor\": \"$VENDOR\",
     \"commit_sha\": \"${COMMIT_SHA}\",
     \"workflow_suite_id\": \"${WORKFLOW_SUITE_ID}\",
     \"workflow_id\": \"${WORKFLOW_ID}\",
