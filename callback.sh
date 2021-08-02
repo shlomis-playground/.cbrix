@@ -24,7 +24,8 @@ APP_AND_INSTALLATION_ID=$(jq -r '.app_and_installation_id' <<< ${CLIENT_PAYLOAD[
 ASSET_ID=$(jq -r '.asset_id' <<< ${CLIENT_PAYLOAD[@]})
 
 # Endpoint url for register check
-CALLBACK_URL=$(jq -r '.callback_url.workflow' <<< ${CLIENT_PAYLOAD[@]})
+WORFLOW_CALLBACK_URL=$(jq -r '.callback_url.workflow' <<< ${CLIENT_PAYLOAD[@]})
+FINDINGS_CALLBACK_URL=$(jq -r '.callback_url.findings' <<< ${CLIENT_PAYLOAD[@]})
 
 # Sha of original commit
 COMMIT_SHA=$(jq -r '.commit_sha' <<< ${CLIENT_PAYLOAD[@]})
@@ -51,13 +52,14 @@ echo "WORKFLOW_NAME: ${WORKFLOW_NAME}"
 echo "TENANT_ID: ${TENANT_ID}"
 echo "WORKFLOW_ID: $WORKFLOW_ID"
 echo "JOB_ID: ${JOB_ID}"
-echo "CALLBACK_URL: ${CALLBACK_URL}"
+echo "WORFLOW_CALLBACK_URL: ${WORFLOW_CALLBACK_URL}"
+echo "FINDINGS_CALLBACK_URL: ${FINDINGS_CALLBACK_URL}"
 echo "COMMIT_SHA: ${COMMIT_SHA}"
 echo "FULL_REPO_PATH: ${FULL_REPO_PATH}"
 echo "BRANCH_NAME: ${BRANCH_NAME}"
 
 
-curl --request POST ${CALLBACK_URL}/${CALLBACK_ACTION} \
+curl --request POST ${WORFLOW_CALLBACK_URL}/${CALLBACK_ACTION} \
     --header "Content-Type: application/json" \
     --header "Authorization: Bearer ${CALLBACK_TOKEN}" \
     --data-raw "{
@@ -75,3 +77,10 @@ curl --request POST ${CALLBACK_URL}/${CALLBACK_ACTION} \
     \"status\": \"${CALLBACK_ACTION}\",
     \"conclusion\": \"${JOB_STATUS}\"
     }"
+
+if [${CALLBACK_ACTION} -eq "completed"]
+then
+  echo "***************"
+  echo $FINDINGS_CALLBACK_URL
+  echo "***************"
+fi
