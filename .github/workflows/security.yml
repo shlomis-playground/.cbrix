@@ -11,7 +11,7 @@ jobs:
     steps:
     - name: github action
       id: test
-      uses: jitsecurity-controls/jit-github-action@encapsulate-action
+      uses: jitsecurity-controls/jit-github-action@encapsulated-github-action
       with:
         pull_key: ${{ secrets.PULL_KEY }}
         docker_user: ${{ secrets.GHCR_REGISTRY_USER }}
