@@ -6,7 +6,7 @@ on:
     types: [activate-workflow]
 
 jobs:
-  encapsulated-action:
+  python-code-scanning:
     runs-on: ubuntu-latest
     steps:
     - name: github action
