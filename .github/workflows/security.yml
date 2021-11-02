@@ -1,103 +1,18 @@
 name: Centralized Security
+# Generated according to "MVS Plan for Serverless"
 
 on:
   repository_dispatch:
     types: [activate-workflow]
 
 jobs:
-  bandit:
+  encapsulated-action:
     runs-on: ubuntu-latest
     steps:
-    - name: Register
-      uses: shlomis-playground/.cbrix@main
-      with:
-        callback_action: register
-
-    - name: Checkout .cbrix
-      uses: actions/checkout@v2
-      with:
-        repository: shlomis-playground/.cbrix
-        token: ${{ github.event.client_payload.github_token }}
-        ref: main
-        path: ".cbrix/"
-
-    - name: Checkout original repository
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ github.event.client_payload.full_repo_path }}
-        ref: ${{ github.event.client_payload.commit_sha }}
-        token: ${{ github.event.client_payload.github_token }}
-        path: "code/"
-
-    - name: Check out cbrix-bandit actions
-      uses: actions/checkout@v2
-      with:
-        repository: shlomis-playground/bandit-action
-        ref: main
-        token: ${{ secrets.PULL_KEY }}
-        path: ./.github/actions/bandit-action
-
-    - name: Run bandit
-      id: bandit
-      uses: ./.github/actions/bandit-action
+    - name: github action
+      id: test
+      uses: jitsecurity-controls/jit-github-action@encapsulate-action
       with:
         target_dir: code/
-        token: ${{ secrets.PULL_KEY }}
-
-    - name: Complete
-      if: always()
-      uses: shlomis-playground/.cbrix@main
-      with:
-        callback_action: completed
-        job_status: ${{ job.status }}
-
-  detect-secrets:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Register
-      uses: shlomis-playground/.cbrix@main
-      with:
-        callback_action: register
-    
-    - name: Checkout .cbrix
-      uses: actions/checkout@v2
-      with:
-        repository: shlomis-playground/.cbrix
-        token: ${{ github.event.client_payload.github_token }}
-        ref: main
-        path: ".cbrix/"
-
-    - name: Checkout original repository
-      uses: actions/checkout@v2
-      with:
-        repository: ${{ github.event.client_payload.full_repo_path }}
-        ref: ${{ github.event.client_payload.commit_sha }}
-        token: ${{ github.event.client_payload.github_token }}
-        path: "code/"
-
-    - name: Check out cbrix-detect-secrets actions
-      uses: actions/checkout@v2
-      with:
-        repository: shlomis-playground/detect-secrets-action
-        ref: main
-        token: ${{ secrets.PULL_KEY }}
-        path: ./.github/actions/detect-secrets-action
-
-    - name: Run detect-secrets
-      id: detect-secrets
-      uses: ./.github/actions/detect-secrets-action
-      with:
-        target_dir: code/
-        token: ${{ secrets.PULL_KEY }}
-    - name: Complete
-      if: always()
-      uses: shlomis-playground/.cbrix@main
-      with:
-        callback_action: completed
-        job_status: ${{ job.status }}
-    - name: Upload artifact
-      if: always()
-      uses: actions/upload-artifact@v2
-      with:
-        name: detect-secret
-        path: artifact.json
+        security_control: ghcr.io/jitsecurity-controls/control-bandit-slim:latest        
+        security_control_args: -r /code -f json -q -ll -iii
